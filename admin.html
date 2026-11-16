@@ -26,6 +26,7 @@ section{background:var(--panel);border:1px solid var(--line);border-radius:10px;
     <section><h2>By aircraft</h2><div class="scroll"><table id="air"></table></div></section>
     <section><h2>Registered players</h2><div class="scroll"><table id="users"></table></div></section>
     <section><h2>Latest flights</h2><div class="scroll"><table id="recent"></table></div></section>
+    <section><h2>Ratings</h2><div id="rsum" style="margin-bottom:10px"></div><div class="scroll"><table id="rlist"></table></div></section>
   </div>
 </div>
 </main>
@@ -36,9 +37,9 @@ section{background:var(--panel);border:1px solid var(--line);border-radius:10px;
   const NAMES = { atr72: 'ATR 72-600', e175: 'Embraer E175', a320: 'A320neo', b737: '737 MAX 8', a321: 'A321neo', a330: 'A330-300', b787: '787-9', a350: 'A350-900', b777: '777-300ER' }, ORDER = Object.keys(NAMES);
   const FAIL = { coffee: 'No coffee', lav: 'Cockpit rule', trolley: 'Loose cart', chaos: 'Meltdown', unsecured: 'Not secured' };
   const when = t => t ? new Date(t).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
-  $('#in').onclick = C.signIn; $('#out').onclick = async () => { await C.signOut(); location.reload(); }; $('#refresh').onclick = load;
+  $('#in').onclick = C.signIn; $('#out').onclick = async () => { await C.signOut(); location.reload(); };
   await C.ready;
-  async function load() {
+  let load = async function () {
     const u = C.user();
     if (!u) { $('#msg').textContent = C.googleEnabled() ? 'Sign in with the admin Google account to see the numbers.' : 'Google sign-in is not switched on yet in Supabase. Finish the setup steps, then reload.'; $('#in').hidden = !C.googleEnabled(); return; }
     $('#who').textContent = 'Signed in as ' + u.email; $('#out').hidden = false; $('#msg').textContent = 'Loading…';
@@ -53,6 +54,15 @@ section{background:var(--panel);border:1px solid var(--line);border-radius:10px;
     $('#users').innerHTML = '<tr><th>Name</th><th>Email</th><th>Joined</th><th>Last seen</th><th class="n">Flights</th><th class="n">Best</th></tr>' + (d.users.map(x => `<tr><td>${e(x.name)}</td><td>${e(x.email)}</td><td>${when(x.joined)}</td><td>${when(x.last_seen)}</td><td class="n">${n(x.plays)}</td><td class="n">${x.best == null ? '—' : n(x.best)}</td></tr>`).join('') || '<tr><td colspan="6">Nobody has signed in yet.</td></tr>');
     $('#recent').innerHTML = '<tr><th>When</th><th>Aircraft</th><th>Round</th><th>Result</th><th class="n">Score</th><th class="n">Chaos</th><th>Player</th></tr>' + (d.recent.map(x => `<tr><td>${when(x.at)}</td><td>${e(NAMES[x.aircraft] || x.aircraft)}</td><td>${x.round} min</td><td class="${x.won ? 'ok' : 'no'}">${x.won ? 'Landed' : e(FAIL[x.fail] || 'Failed')}</td><td class="n">${n(x.score)}</td><td class="n">${x.chaos}%</td><td>${e(x.who)}</td></tr>`).join('') || '<tr><td colspan="7">No flights yet.</td></tr>');
   }
+  const RS = { too_hard: 'Too hard', too_easy: 'Too easy', confusing: 'Confusing', too_fast: 'Too fast', bugs: 'Broke', unrealistic: 'Unrealistic', small_screen: 'Small screen', boring: 'Repetitive' };
+  async function loadRatings() {
+    let r; try { r = await C.rpc('admin_ratings'); } catch (x) { return; }
+    const bars = [5, 4, 3, 2, 1].map(s => { const v = (r.by_star || {})[s] || 0, w = r.count ? v / r.count * 100 : 0; return `<div style="display:grid;grid-template-columns:28px 1fr 34px;gap:8px;align-items:center;font-size:13px"><span>${s}★</span><span style="background:#0a1127;border-radius:4px;height:10px;overflow:hidden"><i style="display:block;height:100%;width:${w}%;background:var(--amber)"></i></span><span class="n" style="text-align:right">${v}</span></div>`; }).join('');
+    const why = Object.entries(r.reasons || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${e(RS[k] || k)} ${v}`).join(' · ');
+    $('#rsum').innerHTML = `<div class="tile" style="margin-bottom:10px"><b>${r.average == null ? '—' : Number(r.average).toFixed(1) + ' ★'}</b><span>Average from ${n(r.count)} rating${r.count === 1 ? '' : 's'}</span></div>${bars}${why ? `<p style="color:var(--mute);font-size:13px;margin:10px 0 0">Low-rating reasons: ${why}</p>` : ''}`;
+    $('#rlist').innerHTML = '<tr><th>When</th><th>Stars</th><th>Reasons</th><th>Comment</th><th>Player</th></tr>' + (r.recent.map(x => `<tr><td>${when(x.at)}</td><td>${'★'.repeat(x.stars)}</td><td>${e((x.reasons || []).map(k => RS[k] || k).join(', '))}</td><td style="white-space:normal;min-width:220px">${e(x.comment || '')}</td><td>${e(x.who)}</td></tr>`).join('') || '<tr><td colspan="5">No ratings yet.</td></tr>');
+  }
+  const _load = load; load = async () => { await _load(); if (C.user()) loadRatings(); };
   load();
 })();
 </script>

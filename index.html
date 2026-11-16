@@ -210,6 +210,31 @@ h1 span{color:var(--amber)}
   .p-stub{min-width:104px}
   #bCart small{display:none}
 }
+/* how to play + rating */
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(7,12,30,.82);overflow-y:auto}
+.modal .card{width:min(720px,100%)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin:0;padding:0;list-style:none}
+.steps li{display:grid;grid-template-columns:44px 1fr;gap:4px 12px;align-items:start;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:12px}
+.steps .n{grid-row:1/3;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--amber);color:#1a1300;font-family:var(--display);font-weight:700;font-size:22px}
+.steps b{font-family:var(--display);letter-spacing:.05em;text-transform:uppercase;font-size:14px}
+.steps span{color:var(--mute);font-size:14px}
+.steps em{font-style:normal;font-size:18px}
+.rules2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:6px 18px;font-size:14px;color:var(--mute);border-top:1px solid var(--line);padding-top:12px}
+.rules2 b{color:var(--ink)}
+.rate{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.rate h3{margin:0;font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-size:15px}
+.stars{display:flex;gap:4px}
+.stars button{font-size:36px;line-height:1;padding:2px 4px;color:#3a4f8a;transition:transform .1s,color .1s}
+.stars button.on{color:var(--amber)}
+.stars button:hover{transform:scale(1.15)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font-size:13.5px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--raise);color:var(--ink)}
+.chips button.on{background:var(--amber);border-color:var(--amber);color:#1a1300;font-weight:600}
+.rate textarea{font:inherit;font-size:14px;color:var(--ink);background:#0a1127;border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:64px;resize:vertical;-webkit-user-select:text;user-select:text}
+.rate textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:1px}
+.rate .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rate .note{color:var(--mute);font-size:13.5px}
+.rate .note a{color:var(--cyan)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#hDelta.up,#hDelta.down{opacity:1}}
 </style>
 </head>
@@ -221,6 +246,7 @@ h1 span{color:var(--amber)}
       <div>
         <div class="eyebrow">Cabin crew time-management · 9 type ratings</div>
         <h1>Galley <span>Chaos</span></h1>
+        <p class="tag" style="margin-bottom:12px"><button class="btn primary" id="bHelp2" type="button">How to play</button></p>
         <p class="tag">You are the Purser. Run the cabin from wheels-up to touchdown: serve the right item to the right seat, make the right call on the PA, keep the cockpit caffeinated and never leave a cart loose in turbulence.</p>
       </div>
       <div class="roundbox">
@@ -239,7 +265,7 @@ h1 span{color:var(--amber)}
     <div id="acct"></div>
     <footer class="foot">
       <span>Crew numbers follow the 1-per-50-seats minimum. Progress saves on this device.</span>
-      <div><button class="btn small" id="bMute" type="button" aria-pressed="true">Sound on</button><button class="btn small" id="bReset" type="button">Reset progress</button></div>
+      <div><button class="btn small" id="bHelp" type="button">How to play</button><button class="btn small" id="bRate" type="button">Rate the game</button><button class="btn small" id="bMute" type="button" aria-pressed="true">Sound on</button><button class="btn small" id="bReset" type="button">Reset progress</button></div>
     </footer>
   </div>
 </section>
@@ -295,6 +321,7 @@ h1 span{color:var(--amber)}
       <div id="eStars"></div>
       <p id="eReason"></p>
       <dl id="eStats"></dl>
+      <div class="rate" id="eRate" hidden></div>
       <div class="row"><button class="btn primary" id="eNext" type="button">Next aircraft</button><button class="btn" id="eRetry" type="button">Fly it again</button><button class="btn" id="eMenu" type="button">Hangar</button></div>
     </div>
   </div>
@@ -307,6 +334,36 @@ h1 span{color:var(--amber)}
     </div>
   </div>
 </section>
+
+<div class="modal" id="help" hidden role="dialog" aria-labelledby="hTitle">
+  <div class="card">
+    <div class="eyebrow">Crew briefing</div>
+    <h2 id="hTitle">How to play</h2>
+    <p>You are the Purser. Keep the passengers happy, the flight deck caffeinated and the cabin safe until the clock reaches 0:00.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><b>Pick a crew member</b><span>Click a person in uniform or their card at the bottom. Keys <kbd>1</kbd>–<kbd>8</kbd> work too. The Purser (yellow) is fastest.</span></li>
+      <li><span class="n">2</span><b>Click a passenger bubble</b><span>A bubble shows what they need. The ring around it is their patience running out.</span></li>
+      <li><span class="n">3</span><b>Serve the right item</b><span><em>💧 🥜 🍱 🧃 🍵 🧸</em> Pick the matching item from the cart tray (keys <kbd>Q</kbd>–<kbd>P</kbd>). The crew fetches it and delivers it.</span></li>
+      <li><span class="n">4</span><b>Make the right call</b><span><em>🧳 🧍 😭 🦵 💺</em> Out of their seat, crying, kicking? Pick the right announcement or response from three choices.</span></li>
+      <li><span class="n">5</span><b>Never ignore the cockpit</b><span><em>☕ 🚽</em> Coffee: click the front galley. Captain's break: click the cockpit door. 20 seconds or the flight diverts.</span></li>
+      <li><span class="n">6</span><b>Secure for landing</b><span>When DESCENT flashes: dock every cart within 8 seconds (button or key <kbd>C</kbd>) and lock both lavatories <em>🔓</em>.</span></li>
+    </ol>
+    <div class="rules2">
+      <span><b>😊 Quick</b> full points and +10 s</span>
+      <span><b>🙁 Late or wrong</b> −5 s</span>
+      <span><b>Cabin Chaos 100%</b> you lose</span>
+      <span><b>Carts</b> restock crew nearby but block the aisle</span>
+    </div>
+    <div class="row"><button class="btn primary" id="hGo" type="button">Got it, let's fly</button></div>
+  </div>
+</div>
+<div class="modal" id="rateBox" hidden role="dialog" aria-labelledby="rTitle">
+  <div class="card">
+    <div class="eyebrow">Your feedback</div>
+    <h2 id="rTitle">Rate Galley Chaos</h2>
+    <div class="rate" id="rForm" style="border-top:0;padding-top:0"></div>
+  </div>
+</div>
 
 <script src="game.js"></script>
 <script src="cloud.js"></script>

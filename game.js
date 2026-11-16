@@ -784,6 +784,8 @@ function showEnd(win, title, reason, stars, bonus, record) {
   if (G.bonks) rows.splice(4, 0, ['Glove bonks', G.bonks]);
   if (win) rows.splice(1, 0, ['Calm-cabin bonus', '+' + num(bonus)]);
   $('#eStats').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+  Save.data.flights = (Save.data.flights || 0) + 1; Save.store();
+  const rb = $('#eRate'); rb.hidden = !wantRating(); if (!rb.hidden) ratingForm(rb, null);
   const nx = $('#eNext'); nx.hidden = !(win && G.li < LEVELS.length - 1); $('#eRetry').classList.toggle('primary', nx.hidden); hud(); showOverlay('end'); (nx.hidden ? $('#eRetry') : nx).focus();
 }
 function buildMenu() {
@@ -817,7 +819,7 @@ cv.addEventListener('pointermove', ev => { if (G.state !== 'play') return; const
 cv.addEventListener('pointerleave', () => { G.hover = null; });
 cv.addEventListener('contextmenu', ev => ev.preventDefault());
 document.addEventListener('keydown', ev => {
-  if (ev.repeat || ev.ctrlKey || ev.metaKey || ev.altKey) return; const k = ev.key.toLowerCase();
+  if (ev.repeat || ev.ctrlKey || ev.metaKey || ev.altKey) return; if (/^(TEXTAREA|INPUT)$/.test((ev.target || {}).tagName || '') || !$('#help').hidden || !$('#rateBox').hidden) return; const k = ev.key.toLowerCase();
   if (G.state === 'brief' && (k === 'enter' || k === ' ')) { ev.preventDefault(); return begin(); }
   if (G.state === 'play' && G.glove) { if (k === ' ' || k === 'enter') { ev.preventDefault(); gloveTap(); } return; }
   if (G.state === 'play' && G.prompt) { if (k >= '1' && k <= '3') answer(+k - 1); return; }
@@ -832,7 +834,7 @@ $('#trayItems').addEventListener('click', ev => { const b = ev.target.closest('.
 $('#pOpts').addEventListener('click', ev => { const b = ev.target.closest('.opt'); if (b) answer(+b.dataset.i); });
 $('#gBtn').addEventListener('pointerdown', ev => { ev.preventDefault(); gloveTap(); });
 $('#bCart').addEventListener('click', () => { sfx.init(); cartButton(); });
-$('#cards').addEventListener('click', ev => { const b = ev.target.closest('.pass'); if (b && !b.disabled) { sfx.init(); startLevel(+b.dataset.i); } });
+$('#cards').addEventListener('click', ev => { const b = ev.target.closest('.pass'); if (b && !b.disabled) { sfx.init(); const i = +b.dataset.i; if (!Save.data.seenHelp) showHelp(() => startLevel(i)); else startLevel(i); } });
 $('#rounds').addEventListener('click', ev => { const b = ev.target.closest('.seg'); if (b) { Save.data.round = +b.dataset.min; Save.store(); buildMenu(); } });
 $('#bGo').addEventListener('click', begin); $('#bBack').addEventListener('click', toMenu);
 $('#eRetry').addEventListener('click', () => startLevel(G.li)); $('#eNext').addEventListener('click', () => startLevel(G.li + 1)); $('#eMenu').addEventListener('click', toMenu);
@@ -848,6 +850,45 @@ $('#bReset').addEventListener('click', ev => {
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
 if (window.ResizeObserver) new ResizeObserver(layout).observe($('#stage')); window.addEventListener('resize', layout);
 
+/* ---------- HOW TO PLAY + RATINGS ---------- */
+const REASONS = [['too_hard', 'Too hard'], ['confusing', 'Confusing controls'], ['too_fast', 'Too fast'], ['small_screen', 'Hard to see on my screen'], ['bugs', 'Something broke'], ['unrealistic', 'Not realistic'], ['boring', 'Gets repetitive'], ['too_easy', 'Too easy']];
+const PRAISE = ['', 'Sorry it was a rough flight.', 'Thanks. What should we fix first?', 'Thanks. What would make it better?', 'Glad you enjoyed it!', 'Wonderful, thank you!'];
+let helpBack = null;
+function showHelp(after) { helpBack = after || null; $('#help').hidden = false; $('#hGo').focus(); if (G.state === 'play') pause(true); }
+function closeHelp() { $('#help').hidden = true; Save.data.seenHelp = true; Save.store(); const f = helpBack; helpBack = null; if (f) f(); }
+function ratingForm(box, done) {
+  const st = { stars: 0, reasons: new Set(), sent: false };
+  const draw = () => {
+    if (st.sent) { box.innerHTML = `<h3>Thank you for rating ${'★'.repeat(st.stars)}</h3><p class="note">${st.stars >= 4 ? 'If you have a moment, a ⭐ on <a href="https://github.com/kunalmbhatia/galley-chaos" target="_blank" rel="noopener">GitHub</a> helps other people find the game.' : 'Your notes go straight to the maker. The next update will use them.'}</p>`; return; }
+    const low = st.stars && st.stars <= 3;
+    box.innerHTML = `<h3>How was your flight?</h3>
+      <div class="stars" role="radiogroup" aria-label="Rating">${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${st.stars === n}" aria-label="${n} star${n > 1 ? 's' : ''}" data-s="${n}" class="${n <= st.stars ? 'on' : ''}">★</button>`).join('')}</div>
+      ${st.stars ? `<p class="note">${PRAISE[st.stars]}</p>` : ''}
+      ${low ? `<div class="chips">${REASONS.map(([k, l]) => `<button type="button" data-r="${k}" aria-pressed="${st.reasons.has(k)}" class="${st.reasons.has(k) ? 'on' : ''}">${l}</button>`).join('')}</div>` : ''}
+      ${st.stars ? `<label class="note" for="rComment">${low ? 'Anything else? (optional)' : 'Anything you would add? (optional)'}</label><textarea id="rComment" maxlength="500" placeholder="${low ? 'For example: I could not tell which crew member was selected' : 'For example: more scenarios with toddlers'}">${box._c || ''}</textarea>
+      <div class="row"><button class="btn primary" type="button" id="rSend">Send rating</button><span class="note" id="rMsg"></span></div>` : ''}`;
+  };
+  box.onclick = async ev => {
+    const s = ev.target.closest('[data-s]'), r = ev.target.closest('[data-r]'), ta = box.querySelector('textarea');
+    if (ta) box._c = ta.value;
+    if (s) { st.stars = +s.dataset.s; if (st.stars > 3) st.reasons.clear(); draw(); return; }
+    if (r) { const k = r.dataset.r; st.reasons.has(k) ? st.reasons.delete(k) : st.reasons.add(k); draw(); return; }
+    if (ev.target.id === 'rSend') {
+      const b = ev.target; b.disabled = true; $('#rMsg').textContent = 'Sending…';
+      const ok = window.GCCloud ? await window.GCCloud.rate({ stars: st.stars, reasons: [...st.reasons], comment: box._c, aircraft: G.L ? G.L.id : null }) : false;
+      if (ok) { st.sent = true; Save.data.rated = Date.now(); Save.store(); draw(); if (done) done(); }
+      else { b.disabled = false; $('#rMsg').textContent = 'Could not send. Check your connection and try again.'; }
+    }
+  };
+  box._c = ''; draw();
+}
+const wantRating = () => !Save.data.rated && (Save.data.flights || 0) >= 1;
+$('#bHelp').addEventListener('click', () => showHelp()); $('#bHelp2').addEventListener('click', () => showHelp());
+$('#hGo').addEventListener('click', closeHelp);
+$('#bRate').addEventListener('click', () => { ratingForm($('#rForm'), null); $('#rateBox').hidden = false; });
+$('#rateBox').addEventListener('click', ev => { if (ev.target.id === 'rateBox') $('#rateBox').hidden = true; });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { if (!$('#help').hidden) closeHelp(); else if (!$('#rateBox').hidden) $('#rateBox').hidden = true; } }, true);
+
 /* ---------- MAIN LOOP ---------- */
 function modalTick(dt) { if (G.glove) gloveTick(dt); else if (G.prompt) promptTick(dt); }
 let lastT = 0;
@@ -858,5 +899,5 @@ function frame(ts) {
   requestAnimationFrame(frame);
 }
 Save.load(); sfx.muted = !!Save.data.muted; buildMenu(); setMute(sfx.muted); showScreen('menu'); layout(); requestAnimationFrame(frame);
-window.GalleyChaos = { G, V, LEVELS, ITEMS, ITEM_ORDER, WANTS, Save, startLevel, begin, update, onTile, select, pickItem, answer, gloveTap, modalTick, cartButton, validPark, canReach, seatGoals, draw, hud };
+window.GalleyChaos = { showHelp, ratingForm, G, V, LEVELS, ITEMS, ITEM_ORDER, WANTS, Save, startLevel, begin, update, onTile, select, pickItem, answer, gloveTap, modalTick, cartButton, validPark, canReach, seatGoals, draw, hud };
 })();

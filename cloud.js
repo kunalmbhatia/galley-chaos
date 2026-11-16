@@ -43,6 +43,10 @@ function play(p) {
   const row = { device_id: st.device, user_id: st.session ? st.session.user.id : null, aircraft: p.aircraft, round_min: p.round, won: !!p.won, fail_reason: p.fail || null, score: Math.round(p.score), chaos: Math.round(p.chaos), duration_s: Math.min(600, Math.round(p.duration)), smiles: p.smiles | 0, frowns: p.frowns | 0, bonks: p.bonks | 0 };
   st.queue.push(row); if (st.queue.length > 30) st.queue.shift(); save(); flush();
 }
+async function rate(r) {
+  const row = { device_id: st.device, user_id: st.session ? st.session.user.id : null, stars: r.stars | 0, reasons: r.reasons || [], comment: (r.comment || '').trim().slice(0, 500) || null, aircraft: r.aircraft || null };
+  try { const res = await call('/rest/v1/ratings', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(row) }); return res.ok; } catch (e) { return false; }
+}
 async function rpc(name) { const r = await call('/rest/v1/rpc/' + name, { method: 'POST', body: '{}' }); if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? 'not authorised' : 'error ' + r.status); return r.json(); }
 let msg = '';
 function note(m) { msg = m; render(); }
@@ -59,5 +63,5 @@ const ready = (async () => {
   render(); flush();
 })();
 window.addEventListener('online', flush);
-window.GCCloud = { ready, play, rpc, signIn, signOut, user: () => st.session && st.session.user, googleEnabled: () => googleOn, esc };
+window.GCCloud = { ready, play, rate, rpc, signIn, signOut, user: () => st.session && st.session.user, googleEnabled: () => googleOn, esc };
 })();
