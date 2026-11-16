@@ -66,6 +66,10 @@ h1 span{color:var(--amber)}
 .p-state{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.1em;color:var(--green)}
 .pass:disabled .p-state{color:var(--mute)}
 .p-stars{color:var(--amber);font-size:15px;letter-spacing:.12em;min-height:1.2em}
+#acct{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:var(--mute);font-size:13px}
+#acct:empty{display:none}
+#acct a{color:var(--cyan)}
+#acct b{color:var(--ink)}
 .foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:var(--mute);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
 .foot div{display:flex;gap:8px;flex-wrap:wrap}
 
@@ -232,6 +236,7 @@ h1 span{color:var(--amber)}
       <li><b>Two instant fails</b>An ignored cockpit timer, or a cart left out 8 s into turbulence. Either one diverts the flight.</li>
     </ul>
     <div id="cards"></div>
+    <div id="acct"></div>
     <footer class="foot">
       <span>Crew numbers follow the 1-per-50-seats minimum. Progress saves on this device.</span>
       <div><button class="btn small" id="bMute" type="button" aria-pressed="true">Sound on</button><button class="btn small" id="bReset" type="button">Reset progress</button></div>
@@ -304,6 +309,7 @@ h1 span{color:var(--amber)}
 </section>
 
 <script src="game.js"></script>
+<script src="cloud.js"></script>
 <script>
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

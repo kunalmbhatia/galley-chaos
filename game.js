@@ -777,6 +777,7 @@ function hud(force) {
 }
 function showEnd(win, title, reason, stars, bonus, record) {
   const L = G.L, best = Save.data.best[bestKey()] || 0, n = G.n;
+  if (window.GCCloud) try { window.GCCloud.play({ aircraft: L.id, round: G.R / 60, won: win, fail: G.failWhy, score: G.score, chaos: G.chaos, duration: G.t, smiles: n.good, frowns: n.late + n.bad, bonks: G.bonks }); } catch (e) { /* stats are optional */ }
   $('#end').dataset.win = win ? 1 : 0; $('#eKicker').textContent = L.flight + ' · ' + L.name + ' · ' + G.R / 60 + ' MIN ROUND'; $('#eTitle').textContent = title; $('#eReason').textContent = reason;
   $('#eStars').textContent = win ? '★'.repeat(stars) + '☆'.repeat(3 - stars) : '';
   const rows = [['Score', num(G.score) + (record ? '  NEW BEST' : '')], ['Best on this aircraft and round', num(best)], ['😊 Quick  ·  🙂 On time', n.good + '  ·  ' + n.ok], ['🙁 Late  ·  😡 Missed or wrong', n.late + '  ·  ' + n.bad], ['Time flown', fmt(G.t)], ['Final Cabin Chaos', Math.floor(G.chaos) + '%']];

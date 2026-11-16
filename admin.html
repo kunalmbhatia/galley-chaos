@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Galley Chaos admin</title>
+<style>
+:root{--navy:#0b132b;--panel:#111c3a;--raise:#1a2850;--line:#2b3c6b;--ink:#e9effc;--mute:#8d9fc6;--cyan:#6fffe9;--amber:#ffb703;--red:#ff4d5e;--green:#3ddc97;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 18px 48px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px}
+h1{font-size:26px;margin:0;letter-spacing:.02em}h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:0 0 8px;font-family:ui-monospace,Consolas,monospace}
+.btn{font:inherit;font-weight:700;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--raise);color:var(--ink);cursor:pointer}.btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1300}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.tile b{display:block;font:700 28px ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;color:var(--cyan)}.tile span{color:var(--mute);font-size:13px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mute);font-weight:600}td.n,th.n{text-align:right}
+.days{display:flex;align-items:flex-end;gap:3px;height:120px}.days div{flex:1;background:var(--cyan);border-radius:3px 3px 0 0;min-height:2px;position:relative}.days div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;padding:2px 6px;border-radius:4px;font-size:12px;white-space:nowrap;z-index:2}
+.axis{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:4px}
+.ok{color:var(--green)}.no{color:var(--red)}#msg{color:var(--mute)}a{color:var(--cyan)}
+</style></head>
+<body><main>
+<header><div><h1>Galley Chaos · Admin</h1><div id="who" style="color:var(--mute);font-size:13px"></div></div><div><button class="btn" id="refresh" type="button" hidden>Refresh</button> <button class="btn" id="out" type="button" hidden>Sign out</button> <button class="btn primary" id="in" type="button" hidden>Sign in with Google</button></div></header>
+<p id="msg">Loading…</p>
+<div id="dash" hidden>
+  <div class="tiles" id="tiles"></div>
+  <div class="cols" style="margin-top:20px">
+    <section><h2>Flights per day, last 30 days</h2><div class="days" id="days"></div><div class="axis"><span id="d0"></span><span id="d1"></span></div></section>
+    <section><h2>By aircraft</h2><div class="scroll"><table id="air"></table></div></section>
+    <section><h2>Registered players</h2><div class="scroll"><table id="users"></table></div></section>
+    <section><h2>Latest flights</h2><div class="scroll"><table id="recent"></table></div></section>
+  </div>
+</div>
+</main>
+<script src="cloud.js"></script>
+<script>
+(async () => {
+  const $ = s => document.querySelector(s), C = window.GCCloud, e = C.esc, n = v => Number(v || 0).toLocaleString('en-IN');
+  const NAMES = { atr72: 'ATR 72-600', e175: 'Embraer E175', a320: 'A320neo', b737: '737 MAX 8', a321: 'A321neo', a330: 'A330-300', b787: '787-9', a350: 'A350-900', b777: '777-300ER' }, ORDER = Object.keys(NAMES);
+  const FAIL = { coffee: 'No coffee', lav: 'Cockpit rule', trolley: 'Loose cart', chaos: 'Meltdown', unsecured: 'Not secured' };
+  const when = t => t ? new Date(t).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+  $('#in').onclick = C.signIn; $('#out').onclick = async () => { await C.signOut(); location.reload(); }; $('#refresh').onclick = load;
+  await C.ready;
+  async function load() {
+    const u = C.user();
+    if (!u) { $('#msg').textContent = C.googleEnabled() ? 'Sign in with the admin Google account to see the numbers.' : 'Google sign-in is not switched on yet in Supabase. Finish the setup steps, then reload.'; $('#in').hidden = !C.googleEnabled(); return; }
+    $('#who').textContent = 'Signed in as ' + u.email; $('#out').hidden = false; $('#msg').textContent = 'Loading…';
+    let d; try { d = await C.rpc('admin_stats'); } catch (x) { $('#msg').textContent = x.message === 'not authorised' ? 'This account is not on the admin list.' : 'Could not load the numbers (' + x.message + '). Check your connection and refresh.'; return; }
+    const t = d.totals; $('#msg').textContent = 'Updated ' + when(d.generated_at) + '. Times are India time.'; $('#dash').hidden = false; $('#refresh').hidden = false;
+    $('#tiles').innerHTML = [['Registered players', t.registered], ['Flights played', t.plays], ['Unique devices', t.devices], ['Flights today', t.plays_today], ['Devices, last 7 days', t.devices_7d], ['Win rate', t.plays ? Math.round(t.wins / t.plays * 100) + '%' : '—'], ['Avg flight', t.plays ? Math.floor(t.avg_duration_s / 60) + ':' + String(t.avg_duration_s % 60).padStart(2, '0') : '—'], ['Glove bonks', t.bonks]]
+      .map(x => `<div class="tile"><b>${typeof x[1] === 'number' ? n(x[1]) : e(x[1])}</b><span>${x[0]}</span></div>`).join('');
+    const map = Object.fromEntries(d.by_day.map(x => [x.day, x])), days = []; for (let i = 29; i >= 0; i--) { const k = new Date(Date.now() - i * 864e5).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); days.push({ day: k, plays: (map[k] || {}).plays || 0, devices: (map[k] || {}).devices || 0 }); }
+    const mx = Math.max(1, ...days.map(x => x.plays)); $('#days').innerHTML = days.map(x => `<div style="height:${x.plays / mx * 100}%" data-t="${x.day}: ${x.plays} flights, ${x.devices} devices"></div>`).join(''); $('#d0').textContent = days[0].day; $('#d1').textContent = days[29].day + ' · peak ' + mx;
+    const air = d.by_aircraft.sort((a, b) => ORDER.indexOf(a.aircraft) - ORDER.indexOf(b.aircraft));
+    $('#air').innerHTML = '<tr><th>Aircraft</th><th class="n">Flights</th><th class="n">Win rate</th><th class="n">Avg chaos</th><th class="n">Best score</th></tr>' + (air.map(a => `<tr><td>${e(NAMES[a.aircraft] || a.aircraft)}</td><td class="n">${n(a.plays)}</td><td class="n">${Math.round(a.wins / a.plays * 100)}%</td><td class="n">${a.avg_chaos}%</td><td class="n">${n(a.best)}</td></tr>`).join('') || '<tr><td colspan="5">No flights yet.</td></tr>');
+    $('#users').innerHTML = '<tr><th>Name</th><th>Email</th><th>Joined</th><th>Last seen</th><th class="n">Flights</th><th class="n">Best</th></tr>' + (d.users.map(x => `<tr><td>${e(x.name)}</td><td>${e(x.email)}</td><td>${when(x.joined)}</td><td>${when(x.last_seen)}</td><td class="n">${n(x.plays)}</td><td class="n">${x.best == null ? '—' : n(x.best)}</td></tr>`).join('') || '<tr><td colspan="6">Nobody has signed in yet.</td></tr>');
+    $('#recent').innerHTML = '<tr><th>When</th><th>Aircraft</th><th>Round</th><th>Result</th><th class="n">Score</th><th class="n">Chaos</th><th>Player</th></tr>' + (d.recent.map(x => `<tr><td>${when(x.at)}</td><td>${e(NAMES[x.aircraft] || x.aircraft)}</td><td>${x.round} min</td><td class="${x.won ? 'ok' : 'no'}">${x.won ? 'Landed' : e(FAIL[x.fail] || 'Failed')}</td><td class="n">${n(x.score)}</td><td class="n">${x.chaos}%</td><td>${e(x.who)}</td></tr>`).join('') || '<tr><td colspan="7">No flights yet.</td></tr>');
+  }
+  load();
+})();
+</script>
+</body></html>

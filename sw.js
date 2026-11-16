@@ -1,6 +1,6 @@
 /* Galley Chaos service worker: precache the 4 files, serve from cache, refresh in the background. */
-const CACHE = 'galley-chaos-v2';
-const ASSETS = ['./', './index.html', './game.js', './manifest.json'];
+const CACHE = 'galley-chaos-v3';
+const ASSETS = ['./', './index.html', './game.js', './cloud.js', './manifest.json', './privacy.html'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
