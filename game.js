@@ -47,23 +47,23 @@ const PA = {
 };
 /* Crew = regulatory minimum of 1 cabin crew per 50 seats (or part of 50) on a typical seat count. Carts = 1 per 2 crew. */
 const LEVELS = [
-  { id: 'atr72', flight: 'GC 101', name: 'ATR 72-600', seats: 72, blocks: [2, 2], rows: 6, crew: 2, carts: 1, items: 3, spawn: 5.4, rate: 0.28, cGap: 7, dGap: 6.5, ck: [], ckGap: 0, sit: 1.6, shake: 1.5, jolt: 0, pat: 1.35, occ: 1,
-    brief: ['Click a crew member (or press 1–2), then click a passenger bubble.', 'Service: pick the matching item from the cart tray. The crew loads it at the nearest galley or parked cart. Wrong item, wrong face.', 'Out of their seat with the sign on 🧳: send crew, then pick the right PA announcement. A repeat offender earns the glove.', 'Descent: lock both lavatories 🔓 and dock the cart within 8 s.'] },
-  { id: 'e175', flight: 'GC 175', name: 'Embraer E175', seats: 88, blocks: [2, 2], rows: 8, crew: 2, carts: 1, items: 4, spawn: 5.0, rate: 0.24, cGap: 7, dGap: 6, ck: ['lav'], ckGap: 30, sit: 1.8, shake: 2, jolt: 0, pat: 1.3, occ: 1,
+  { id: 'atr72', miss: 5, lug: 6, sp: 22, cMax: 1, flight: 'GC 101', name: 'ATR 72-600', seats: 72, blocks: [2, 2], rows: 6, crew: 2, carts: 1, items: 3, spawn: 7.0, rate: 0.1, cGap: 7, dGap: 6.5, ck: [], ckGap: 0, sit: 0.6, shake: 1.5, jolt: 0, pat: 2.0, occ: 1,
+    brief: ['Click a crew member (or press 1–2), then click a passenger bubble.', 'Service: pick the matching item from the cart tray. The crew loads it at the nearest galley or parked cart. Wrong item, wrong face.', 'One passenger will stand up during the climb 🧳: send crew, then pick the right PA announcement.', 'Descent: lock both lavatories 🔓 and dock the cart within 8 s.'] },
+  { id: 'e175', miss: 6, lug: 8, sp: 18, cMax: 2, flight: 'GC 175', name: 'Embraer E175', seats: 88, blocks: [2, 2], rows: 8, crew: 2, carts: 1, items: 4, spawn: 6.0, rate: 0.13, cGap: 7, dGap: 6, ck: ['lav'], ckGap: 30, sit: 1.2, shake: 2, jolt: 0, pat: 1.7, occ: 1,
     brief: ['New on the cart: sick bags 🛍️. An airsick passenger shows 🤢.', 'Two-person cockpit rule: when the Captain needs a break 🚽, click the cockpit door within 20 s. That crew member stays locked in for 12 s.', 'Children cry, kick and press buttons. Walk over and pick the sensible response.'] },
-  { id: 'a320', flight: 'GC 320', name: 'Airbus A320neo', seats: 186, blocks: [3, 3], rows: 9, crew: 4, carts: 2, items: 5, spawn: 4.0, rate: 0.18, cGap: 6.5, dGap: 5.6, ck: ['coffee', 'lav'], ckGap: 24, sit: 2, shake: 2.5, jolt: 0, pat: 1.2, occ: .96,
+  { id: 'a320', miss: 7, lug: 9, sp: 15, cMax: 3, flight: 'GC 320', name: 'Airbus A320neo', seats: 186, blocks: [3, 3], rows: 9, crew: 4, carts: 2, items: 5, spawn: 4.6, rate: 0.14, cGap: 6.5, dGap: 5.6, ck: ['coffee', 'lav'], ckGap: 24, sit: 1.8, shake: 2.5, jolt: 0, pat: 1.45, occ: .96,
     brief: ['Four crew, two carts: one docks at the front galley, one at the rear.', 'A parked cart blocks the single aisle. Crew behind it cannot reach the cockpit.', 'FO Smriti wants coffee ☕. Click the front galley: 3 s to brew, 20 s to deliver.', 'New on the cart: juice 🧃.'] },
-  { id: 'b737', flight: 'GC 737', name: 'Boeing 737 MAX 8', seats: 189, blocks: [3, 3], rows: 10, crew: 4, carts: 2, items: 6, spawn: 3.7, rate: 0.18, cGap: 6, dGap: 5.2, ck: ['coffee', 'lav'], ckGap: 22, sit: 2.2, shake: 5, jolt: 6, pat: 1.15, occ: .96,
+  { id: 'b737', miss: 8, lug: 10, sp: 13, cMax: 4, flight: 'GC 737', name: 'Boeing 737 MAX 8', seats: 189, blocks: [3, 3], rows: 10, crew: 4, carts: 2, items: 6, spawn: 4.1, rate: 0.15, cGap: 6, dGap: 5.2, ck: ['coffee', 'lav'], ckGap: 22, sit: 2.2, shake: 5, jolt: 6, pat: 1.3, occ: .96,
     brief: ['Heavy turbulence: jolts knock the crew off balance during descent.', 'New on the cart: teddies 🧸 for the children.', 'Dock the carts before the descent starts, not after.'] },
-  { id: 'a321', flight: 'GC 321', name: 'Airbus A321neo', seats: 232, blocks: [3, 3], rows: 12, crew: 5, carts: 2, items: 7, spawn: 3.4, rate: 0.16, cGap: 6, dGap: 5.2, ck: ['coffee', 'lav'], ckGap: 22, sit: 2.4, shake: 3, jolt: 0, pat: 1.15, occ: .96,
+  { id: 'a321', miss: 9, lug: 11, sp: 12, cMax: 5, flight: 'GC 321', name: 'Airbus A321neo', seats: 232, blocks: [3, 3], rows: 12, crew: 5, carts: 2, items: 7, spawn: 3.7, rate: 0.14, cGap: 6, dGap: 5.2, ck: ['coffee', 'lav'], ckGap: 22, sit: 2.4, shake: 3, jolt: 0, pat: 1.22, occ: .96,
     brief: ['The longest single aisle in the fleet. Five crew.', 'Two parked carts cut the cabin into three. Keep someone in each section.', 'New on the cart: tea 🍵.'] },
-  { id: 'a330', flight: 'GC 330', name: 'Airbus A330-300', seats: 300, blocks: [2, 4, 2], rows: 10, crew: 6, carts: 3, items: 8, spawn: 3.2, rate: 0.13, cGap: 5.5, dGap: 5, ck: ['coffee', 'lav'], ckGap: 20, sit: 2.6, shake: 3, jolt: 0, pat: 1.12, occ: .96,
+  { id: 'a330', miss: 10, lug: 12, sp: 11, cMax: 6, flight: 'GC 330', name: 'Airbus A330-300', seats: 300, blocks: [2, 4, 2], rows: 10, crew: 6, carts: 3, items: 8, spawn: 3.4, rate: 0.12, cGap: 5.5, dGap: 5, ck: ['coffee', 'lav'], ckGap: 20, sit: 2.6, shake: 3, jolt: 0, pat: 1.15, occ: .96,
     brief: ['Two aisles, six crew, three carts. Cross-galleys at the front, middle and rear.', 'A parked cart blocks only its own aisle. Crew route around it.', 'New on the cart: blankets 🧣. A cold passenger shows 🥶.'] },
-  { id: 'b787', flight: 'GC 787', name: 'Boeing 787-9', seats: 296, blocks: [3, 3, 3], rows: 10, crew: 6, carts: 3, items: 9, spawn: 3.1, rate: 0.13, cGap: 5.5, dGap: 5, ck: ['coffee', 'lav'], ckGap: 19, sit: 2.6, shake: 3.5, jolt: 0, pat: 1.1, occ: .96,
+  { id: 'b787', miss: 10, lug: 13, sp: 10, cMax: 6, flight: 'GC 787', name: 'Boeing 787-9', seats: 296, blocks: [3, 3, 3], rows: 10, crew: 6, carts: 3, items: 9, spawn: 3.2, rate: 0.12, cGap: 5.5, dGap: 5, ck: ['coffee', 'lav'], ckGap: 19, sit: 2.6, shake: 3.5, jolt: 0, pat: 1.1, occ: .96,
     brief: ['Nine abreast. Requests come faster than you can walk.', 'New on the cart: headphones 🎧. Someone who cannot stand the noise shows 🙉.'] },
-  { id: 'a350', flight: 'GC 350', name: 'Airbus A350-900', seats: 325, blocks: [3, 3, 3], rows: 12, crew: 7, carts: 3, items: 10, spawn: 2.9, rate: 0.12, cGap: 5, dGap: 4.6, ck: ['coffee', 'lav'], ckGap: 18, sit: 2.8, shake: 4, jolt: 7, pat: 1.08, occ: .97,
+  { id: 'a350', miss: 11, lug: 14, sp: 10, cMax: 7, flight: 'GC 350', name: 'Airbus A350-900', seats: 325, blocks: [3, 3, 3], rows: 12, crew: 7, carts: 3, items: 10, spawn: 3.0, rate: 0.115, cGap: 5, dGap: 4.6, ck: ['coffee', 'lav'], ckGap: 18, sit: 2.8, shake: 4, jolt: 7, pat: 1.08, occ: .97,
     brief: ['Seven crew, keys 1–7. Ten items on the cart.', 'New on the cart: chocolate 🍫.', 'Jolts in the descent. Secure the cabin early.'] },
-  { id: 'b777', flight: 'GC 777', name: 'Boeing 777-300ER', seats: 396, blocks: [3, 4, 3], rows: 12, crew: 8, carts: 4, items: 10, spawn: 2.9, rate: 0.1, cGap: 5, dGap: 4.4, ck: ['coffee', 'lav'], ckGap: 16, dbl: 1, sit: 3, shake: 7, jolt: 4.5, pat: 1.05, occ: 1,
+  { id: 'b777', miss: 12, lug: 15, sp: 10, cMax: 8, flight: 'GC 777', name: 'Boeing 777-300ER', seats: 396, blocks: [3, 4, 3], rows: 12, crew: 8, carts: 4, items: 10, spawn: 2.9, rate: 0.1, cGap: 5, dGap: 4.4, ck: ['coffee', 'lav'], ckGap: 16, dbl: 1, sit: 3, shake: 7, jolt: 4.5, pat: 1.05, occ: 1,
     brief: ['Every seat is taken. Eight crew, four carts.', 'Double cockpit events: coffee and Captain break land together, and both timers run.', 'Severe turbulence. Start securing the cabin before the descent call.'] },
 ];
 const NAMES = ['Purser', 'Riya', 'Kabir', 'Tara', 'Dev', 'Meera', 'Arjun', 'Zoya'];
@@ -328,7 +328,7 @@ function spawnScene(stage) {
 function spawnStander() {
   const again = freePax(p => !p.kid && p.strikes > 0 && !p.bonked), fresh = freePax(p => !p.kid && !p.strikes);
   const pool = again.length && (Math.random() < .65 || !fresh.length) ? again : fresh; if (!pool.length) return null;
-  return addReq(pick(pool), 'stander', G.stage === 0 ? '🧳' : '🧍', G.stage === 0 ? 10 : 14 * G.L.pat, 150);
+  return addReq(pick(pool), 'stander', G.stage === 0 ? '🧳' : '🧍', G.stage === 0 ? G.L.sp : 14 * G.L.pat, 150);
 }
 function endReq(r) { r.dead = true; r.pax.req = null; const i = G.reqs.indexOf(r); if (i >= 0) G.reqs.splice(i, 1); if (G.pick && G.pick.r === r) G.pick = null; }
 function resolve(r, c, force) {
@@ -336,15 +336,15 @@ function resolve(r, c, force) {
   endReq(r); G.served++; if (r.kind === 'stander') r.pax.strikes++; if (tier !== 'late') r.pax.joy = 2.5;
   reward(tier, r.pts, s.x + .5, s.y + .3);
 }
-function wrongItem(r, c, it) { const s = r.pax.seat; addChaos(3); reward('bad', 40, s.x + .5, s.y + .3); toast('Seat ' + s.name + ': “I did not ask for ' + it.n.toLowerCase() + '.” Wrong item.'); }
-function wrongCall(r) { const s = r.pax.seat; addChaos(3); reward('bad', 40, s.x + .5, s.y + .3); }
+function wrongItem(r, c, it) { const s = r.pax.seat; addChaos(G.L.miss * .25); reward('bad', 40, s.x + .5, s.y + .3); toast('Seat ' + s.name + ': “I did not ask for ' + it.n.toLowerCase() + '.” Wrong item.'); }
+function wrongCall(r) { const s = r.pax.seat; addChaos(G.L.miss * .25); reward('bad', 40, s.x + .5, s.y + .3); }
 function expire(r) {
   endReq(r); G.missed++; const s = r.pax.seat;
   if (r.kind === 'stander') {
     r.pax.strikes++;
-    if (G.stage === 0) { addChaos(15); G.shakeT = .5; sfx.slam(); toast('Luggage down in row ' + s.row + '. Nearby crew are seeing stars.'); for (const c of G.crew) if (!c.hidden && Math.hypot(c.x - s.x, c.y - s.y) < 2.4) c.stun = 2.5; }
-    else addChaos(12);
-  } else addChaos(12);
+    if (G.stage === 0) { addChaos(G.L.lug); G.shakeT = .5; sfx.slam(); toast('Luggage down in row ' + s.row + '. Nearby crew are seeing stars.'); for (const c of G.crew) if (!c.hidden && Math.hypot(c.x - s.x, c.y - s.y) < 2.4) c.stun = 2.5; }
+    else addChaos(G.L.miss);
+  } else addChaos(G.L.miss);
   reward('bad', 50, s.x + .5, s.y + .3);
 }
 
@@ -417,9 +417,9 @@ function update(dt) {
     else if (G.warned && G.left > R * .25 + 14) G.warned = false;
   } else if (G.left <= 0) { G.left = 0; return finish(); }
   const cap = G.reqs.length >= G.crew.length * 2 + 2;
-  if (G.stage === 0) { G.cT -= dt; if (G.cT <= 0 && G.t < R * .25 - 3) { spawnStander(); G.cT = L.cGap * rnd(.8, 1.2); } }
+  if (G.stage === 0) { G.cT -= dt; if (G.cT <= 0 && G.t < R * .25 - 3 && G.cN < L.cMax) { G.cN++; spawnStander(); G.cT = L.cGap * rnd(.8, 1.2); } }
   else if (G.stage === 1) {
-    const esc = 1 + .6 * (G.t - R * .25) / R;
+    const esc = .7 + .9 * (G.t - R * .25) / R;   // each stage starts gently and builds
     G.spawnT -= dt; if (G.spawnT <= 0) { if (!cap) { if (Math.random() < L.sit / (L.sit + 14)) spawnScene(1) || spawnWant(); else spawnWant(); } G.spawnT = L.spawn / esc * rnd(.7, 1.3); }
     if (L.ck.length) { G.ckT -= dt; if (G.ckT <= 0 && G.left > R * .25 + 8) { const k = L.ck[G.ckN++ % L.ck.length]; cockpitEvent(k); if (L.dbl && Math.random() < .35) cockpitEvent(L.ck[G.ckN % L.ck.length]); G.ckT = L.ckGap * rnd(.8, 1.2); } }
   } else {
@@ -443,7 +443,7 @@ function finish() {
   if (G.chaos >= 100) return fail('unsecured');
   const L = G.L, bonus = Math.round((100 - G.chaos) * 15); G.score += bonus;
   const stars = G.chaos < 30 ? 3 : G.chaos < 60 ? 2 : 1, d = Save.data, k = bestKey(), prev = d.best[k] || 0;
-  d.best[k] = Math.max(prev, G.score); d.stars[k] = Math.max(d.stars[k] || 0, stars); d.unlocked = Math.max(d.unlocked, Math.min(LEVELS.length, G.li + 2)); Save.store();
+  d.best[k] = Math.max(prev, G.score); d.stars[k] = Math.max(d.stars[k] || 0, stars); d.unlocked = Math.max(d.unlocked, Math.min(LEVELS.length, G.li + 2)); if (G.li === 0) d.won1 = true; Save.store();
   G.state = 'end'; sfx.clear();
   const last = G.li === LEVELS.length - 1;
   showEnd(true, last ? 'ALL NINE TYPE RATINGS EARNED' : 'ON BLOCKS', (last ? 'The 777 is parked and nobody is crying. You run this airline now.' : L.name + ' landed with the cabin intact. ' + LEVELS[G.li + 1].name + ' unlocked.') + (open ? ' ' + open + ' lavatory left unlocked (+' + open * 10 + '% chaos).' : ''), stars, bonus, G.score > prev && prev > 0);
@@ -473,7 +473,7 @@ function startLevel(i) {
       look: { skin: SKINS[(k * 2 + 1) % SKINS.length], hair: HAIRS[k % 4], style: f ? 2 : 0, skirt: f, top: k === 0 ? '#ffb703' : '#2ec4b6', legs: '#14213d', accent: k === 0 ? '#c1121f' : '#ffb703', hat: k === 0 ? '#14213d' : null, band: '#ffb703' } });
   }
   Object.assign(G, { state: 'brief', li: i, L, R, kC: Math.pow(120 / R, .75), cab, crew, sel: crew[0], t: 0, left: R, stage: -1, chaos: 0, score: 0, served: 0, missed: 0, bonks: 0, n: { good: 0, ok: 0, late: 0, bad: 0 }, reqs: [], cockpit: [], promptQ: [], prompt: null, glove: null, pick: null,
-    spawnT: 1, cT: 1.5, dT: 1.5, jT: 3, ckT: 5, ckN: Math.floor(Math.random() * 2), dN: 0, trT: 0, warned: false, placing: false, placeTr: null, fx: [], shakeT: 0, hover: null, eid: 0, failWhy: null, delta: 0, deltaN: 0 });
+    spawnT: 1, cT: 4, cN: 0, dT: 1.5, jT: 3, ckT: 5, ckN: Math.floor(Math.random() * 2), dN: 0, trT: 0, warned: false, placing: false, placeTr: null, fx: [], shakeT: 0, hover: null, eid: 0, failWhy: null, delta: 0, deltaN: 0 });
   $('#toastMsg').textContent = 'Stand by for departure.'; $('#prompt').hidden = true; $('#glove').hidden = true;
   buildCrewBar(); buildTray(); showScreen('game'); showOverlay('brief'); layout(); hud(true);
   $('#bFlt').textContent = 'FLIGHT ' + L.flight + ' · ' + L.seats + ' SEATS · ' + L.crew + ' CREW · ' + L.carts + (L.carts > 1 ? ' CARTS' : ' CART') + ' · ' + fmt(R) + ' ROUND';
@@ -654,7 +654,7 @@ function draw(dt) {
   ctx.stroke();
   let sh = 0; if (moving) { if (G.stage === 2) sh = G.L.shake; if (G.shakeT > 0) sh += 7 * G.shakeT; }
   ctx.save(); if (sh) ctx.translate(rnd(-sh, sh) * .5, rnd(-sh, sh) * .5);
-  drawAirframe(); drawCabin(); drawCrew(); drawBubbles(); drawFx(); ctx.restore();
+  drawAirframe(); drawCabin(); drawCrew(); drawBubbles(); drawFx(); ctx.restore(); drawCoach();
 }
 function drawAirframe() {
   const { W, H, nose, tail } = G.cab, m = .45, y0 = -m, y1 = H + m, cy = H / 2, far = H * .9 + 3;
@@ -730,6 +730,19 @@ function drawCrew() {
     else if (!c.task && G.state === 'play') sText('IDLE', x, y + u * .2, u * .2, 'rgba(255,183,3,' + (.6 + .4 * Math.sin(G.anim * 6)) + ')');
   }
 }
+/* First-flight coach: points at what to click next until the player has landed the ATR once. */
+const coaching = () => G.state === 'play' && G.L.id === 'atr72' && !Save.data.won1 && !G.prompt && !G.glove;
+function drawCoach() {
+  if (!coaching()) return; const u = V.ts, bob = Math.sin(G.anim * 6) * u * .12; let msg = '';
+  if (G.pick) msg = '3. Now pick ' + G.pick.r.e + ' from the cart tray below';
+  else {
+    const r = G.reqs.filter(q => !q.claimed).sort((a, b) => (a.pat - a.t) - (b.pat - b.t))[0];
+    if (r) { const s = r.pax.seat, [x, y] = P(s.x + .5, s.y + .5); circ(x, y, u * (.62 + .06 * Math.sin(G.anim * 6)), null, '#ffb703', u * .08); sText('👇', x, y - u * .95 + bob, u * .6, '#fff', EMOJI); msg = (G.sel ? '' : '1. Click a crew member   ') + '2. Click the passenger with the bubble'; }
+    else if (G.stage === 2) { const l = G.cab.lavs.find(v => !v.locked && !v.occ); if (l) { const [x, y] = P(l.x + .5, l.y + .5); circ(x, y, u * .62, null, '#ffb703', u * .08); msg = 'Descent: click each lavatory 🔓 to lock it'; } }
+  }
+  if (!msg) return; const px = Math.max(13, Math.min(22, V.cw / 34)); ctx.font = '700 ' + px + 'px ' + DISPLAY; const w = ctx.measureText(msg).width + 28, x = V.cw / 2;
+  rbox(x - w / 2, 10, w, px + 16, 9, '#ffb703'); sText(msg, x, 10 + (px + 16) / 2, px, '#1a1300', DISPLAY + ',' + EMOJI);
+}
 function drawBubbles() { for (const r of G.reqs) { const s = r.pax.seat; bubble(s.x + .7, s.y + .3, r.e, r.safe ? 1 : 1 - r.t / r.pat, r.claimed); } }
 function drawFx() { for (const f of G.fx) { ctx.globalAlpha = clamp(1.5 - f.t, 0, 1); text(f.text, f.gx, f.gy, .4, f.color, DISPLAY + ',' + EMOJI, f.t * V.ts * .8); } ctx.globalAlpha = 1; }
 
@@ -770,7 +783,7 @@ function hud(force) {
   const btns = $('#crewList').children;
   G.crew.forEach((c, i) => { const b = btns[i]; if (!b) return; const s = b.querySelector('i'); if (s.textContent !== c.status) s.textContent = c.status; b.classList.toggle('sel', c === G.sel); b.classList.toggle('idle', c.status === 'Idle'); b.classList.toggle('warn', c.status === 'Stunned' || c.blocked); });
   const pk = G.pick, tk = pk ? 'p' + pk.r.pax.seat.name + pk.c.id : '';
-  if (tk !== trayKey || force) { trayKey = tk; $('#tray').classList.toggle('on', !!pk); $('#trayLbl').textContent = pk ? 'Seat ' + pk.r.pax.seat.name + ' shows ' + pk.r.e + '  →  pick for ' + pk.c.name : 'CART · click a passenger bubble, then the item'; }
+  if (tk !== trayKey || force) { for (const b of $('#trayItems').children) b.classList.toggle('hint', !!pk && coaching() && b.dataset.id === WANTS[pk.r.kind].item); trayKey = tk; $('#tray').classList.toggle('on', !!pk); $('#trayLbl').textContent = pk ? 'Seat ' + pk.r.pax.seat.name + ' shows ' + pk.r.e + '  →  pick for ' + pk.c.name : 'CART · click a passenger bubble, then the item'; }
   const tb = $('#bCart'), cab = G.cab, docked = cab.trolleys.some(t => t.state === 'docked' && !t.claimed), parked = cab.trolleys.filter(t => t.state === 'parked').length;
   const lbl = G.placing ? 'Cancel Placement' : (G.stage < 2 && docked) ? 'Deploy Cart' : parked > 1 ? 'Dock All Carts' : parked ? 'Dock Cart' : 'Carts Docked';
   if (tb.firstChild.textContent !== lbl) tb.firstChild.textContent = lbl; tb.classList.toggle('act', G.placing); tb.classList.toggle('hot', G.stage === 2 && parked > 0);

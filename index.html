@@ -127,6 +127,7 @@ h1 span{color:var(--amber)}
 .item .in{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .item kbd{justify-self:start;background:#14213d;color:#e9effc;border-color:#14213d;font-size:10px}
 #tray.on .item{opacity:1;box-shadow:0 0 0 2px var(--amber)}
+#tray.on .item.hint{box-shadow:0 0 0 4px #fff,0 0 18px 6px var(--amber);animation:blink .5s steps(2) infinite;transform:scale(1.08)}
 .item:hover{opacity:1}
 
 #crewbar{display:flex;gap:10px;align-items:stretch;padding:8px 14px;background:var(--panel);border-top:1px solid var(--line)}
@@ -264,7 +265,7 @@ h1 span{color:var(--amber)}
     <div id="cards"></div>
     <div id="acct"></div>
     <footer class="foot">
-      <span>Crew numbers follow the 1-per-50-seats minimum. Progress saves on this device.</span>
+      <span>Crew numbers follow the 1-per-50-seats minimum. Progress saves on this device. <b id="ver">v2.1</b></span>
       <div><button class="btn small" id="bHelp" type="button">How to play</button><button class="btn small" id="bRate" type="button">Rate the game</button><button class="btn small" id="bMute" type="button" aria-pressed="true">Sound on</button><button class="btn small" id="bReset" type="button">Reset progress</button></div>
     </footer>
   </div>
